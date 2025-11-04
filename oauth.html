@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth Callback - Game Launcher</title>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .code { background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .btn { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔐 Авторизация Game Launcher</h1>
+    <div id="content">
+        <p>Код авторизации:</p>
+        <div class="code" id="code">Получаем код...</div>
+        <button class="btn" id="copyBtn" onclick="copyCode()">📋 Скопировать код</button>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        function getCodeFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            
+            if (code) {
+                document.getElementById('code').textContent = code;
+                document.getElementById('status').textContent = '✅ Код получен! Скопируйте его в лаунчер.';
+                
+                // Автоматически копируем
+                navigator.clipboard.writeText(code).then(() => {
+                    document.getElementById('status').textContent = '✅ Код скопирован в буфер обмена!';
+                });
+            } else {
+                document.getElementById('code').textContent = 'Код не найден в URL';
+                document.getElementById('status').textContent = '❌ Ошибка: код авторизации не найден';
+            }
+        }
+
+        function copyCode() {
+            const code = document.getElementById('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                document.getElementById('status').textContent = '✅ Код скопирован!';
+            });
+        }
+
+        window.onload = getCodeFromUrl;
+    </script>
+</body>
+</html>
