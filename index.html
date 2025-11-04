@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth Redirect - Game Launcher</title>
+    <meta charset="utf-8">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 600px; 
+            margin: 50px auto; 
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .code { 
+            background: rgba(0,0,0,0.3); 
+            padding: 20px; 
+            border-radius: 10px; 
+            font-size: 20px; 
+            word-break: break-all;
+            border: 2px solid rgba(255,255,255,0.2);
+            margin: 20px 0;
+        }
+        .btn { 
+            background: #4CAF50; 
+            color: white; 
+            padding: 15px 30px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        .success { color: #4CAF50; font-weight: bold; }
+        .error { color: #f44336; }
+        .info { 
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Game Launcher - Авторизация</h1>
+        <div id="content">
+            <p>Код авторизации:</p>
+            <div class="code" id="code">Получаем код...</div>
+            <button class="btn" id="copyBtn" style="display:none;" onclick="copyCode()">
+                📋 Скопировать код
+            </button>
+            <p id="status"></p>
+            
+            <div class="info">
+                <h3>📋 Инструкция:</h3>
+                <p>✅ Вернитесь в Game Launcher</p>
+                <p>✅ Вставьте скопированный код</p>
+                <p>⏱️ Код действителен 10 минут</p>
+                <p>🔐 Не передавайте код третьим лицам</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getAuthCode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const authCode = urlParams.get('code');
+            const error = urlParams.get('error');
+            
+            if (error) {
+                document.getElementById('code').textContent = 'Ошибка: ' + error;
+                document.getElementById('code').className = 'code error';
+                document.getElementById('status').textContent = '❌ Произошла ошибка при авторизации';
+                document.getElementById('status').className = 'error';
+                return;
+            }
+            
+            if (authCode) {
+                document.getElementById('code').textContent = authCode;
+                document.getElementById('code').className = 'code success';
+                document.getElementById('copyBtn').style.display = 'block';
+                document.getElementById('status').textContent = '✅ Код успешно получен!';
+                document.getElementById('status').className = 'success';
+                
+                // Автоматически копируем в буфер обмена
+                navigator.clipboard.writeText(authCode).then(() => {
+                    document.getElementById('status').textContent = '✅ Код скопирован в буфер обмена!';
+                }).catch(() => {
+                    document.getElementById('status').textContent = '✅ Код готов для копирования';
+                });
+            } else {
+                document.getElementById('code').textContent = 'Код авторизации не найден';
+                document.getElementById('code').className = 'code error';
+                document.getElementById('status').textContent = '❌ Проверьте URL или попробуйте снова';
+                document.getElementById('status').className = 'error';
+            }
+        }
+
+        function copyCode() {
+            const code = document.getElementById('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                document.getElementById('status').textContent = '✅ Код скопирован в буфер обмена!';
+            }).catch(() => {
+                document.getElementById('status').textContent = '❌ Не удалось скопировать код';
+            });
+        }
+
+        // Запускаем при загрузке страницы
+        window.onload = getAuthCode;
+    </script>
+</body>
+</html>
